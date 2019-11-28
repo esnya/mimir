@@ -14,6 +14,7 @@ import Options from '../types/Options';
 import { monsters } from '../data/monsters.json';
 
 type Item = Monster & {
+  expCorrection: number | null;
   correctedJobExp: number | null;
   correctedBaseExp: number | null;
 };
@@ -29,20 +30,31 @@ const MonsterTableRow = React.memo(function MonsterTableRow({
   monster: Item;
   n: number;
 }) {
+  const {
+    name,
+    base,
+    expCorrection,
+    correctedBaseExp,
+    correctedJobExp,
+  } = monster;
+
   return (
     <TableRow>
       <TableCell textAlign="right">{n + 1}</TableCell>
       <TableCell>
-        {monster.name.ja} -{monster.name.cn1}
+        {name.ja} -{name.cn1}
       </TableCell>
       <TableCell textAlign="right">
-        {monster.base.レベル && formatInteger(monster.base.レベル)}
+        {base.レベル && formatInteger(base.レベル)}
       </TableCell>
       <TableCell textAlign="right">
-        {monster.correctedBaseExp && formatInteger(monster.correctedBaseExp)}
+        {expCorrection && `${formatInteger(expCorrection * -100)}%`}
       </TableCell>
       <TableCell textAlign="right">
-        {monster.correctedJobExp && formatInteger(monster.correctedJobExp)}
+        {correctedBaseExp && formatInteger(correctedBaseExp)}
+      </TableCell>
+      <TableCell textAlign="right">
+        {correctedJobExp && formatInteger(correctedJobExp)}
       </TableCell>
       <TableCell>{monster.base.サイズ}</TableCell>
       <TableCell>{monster.base.属性}</TableCell>
@@ -62,33 +74,30 @@ interface State {
   };
 }
 
-function correctExp(
-  baseLevel: number,
-  targetLevel: number,
-  exp: number,
-): number {
+function getExpCollection(baseLevel: number, targetLevel: number): number {
   const diff = targetLevel - baseLevel;
   if (diff > 20) {
-    return Math.floor(exp * 0.5);
+    return 0.5;
   } else if (diff > 10) {
-    return Math.floor(exp * 0.8);
+    return 0.2;
   } else if (diff < -30) {
-    return Math.floor(exp * 0.1);
+    return 0.9;
   } else if (diff < -25) {
-    return Math.floor(exp * 0.2);
+    return 0.8;
   } else if (diff < -20) {
-    return Math.floor(exp * 0.4);
+    return 0.6;
   } else if (diff < -15) {
-    return Math.floor(exp * 0.6);
+    return 0.4;
   } else if (diff < -10) {
-    return Math.floor(exp * 0.8);
+    return 0.2;
   }
-  return exp;
+  return 0;
 }
 
 const headers = [
   { text: '名前', path: 'name.ja' },
   { text: 'レベル', path: 'base.レベル' },
+  { text: 'レベル差補正', path: 'expCorrection' },
   { text: 'Base経験値（補）', path: 'correctedBaseExp' },
   { text: 'Job経験値（補）', path: 'correctedJobExp' },
   { text: 'サイズ', path: 'base.サイズ' },
@@ -152,17 +161,24 @@ export default class MonsterTable extends React.Component<
         return true;
       })
       .map(monster => {
+        const {
+          レベル: level,
+          ベース経験値: baseExp,
+          ジョブ経験値: jobExp,
+        } = monster.base;
+        const expCorrection = level && getExpCollection(baseLevel, level);
         const correctedBaseExp =
-          monster.base.レベル &&
-          monster.base.ベース経験値 &&
-          correctExp(baseLevel, monster.base.レベル, monster.base.ベース経験値);
+          (expCorrection !== null &&
+            baseExp &&
+            baseExp * (1 - expCorrection)) ||
+          null;
         const correctedJobExp =
-          monster.base.レベル &&
-          monster.base.ジョブ経験値 &&
-          correctExp(baseLevel, monster.base.レベル, monster.base.ジョブ経験値);
+          (expCorrection !== null && jobExp && jobExp * (1 - expCorrection)) ||
+          null;
 
         return {
           ...monster,
+          expCorrection,
           correctedBaseExp,
           correctedJobExp,
         };
