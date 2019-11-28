@@ -9,6 +9,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - run: nvm install node
+      - run: nvm use node
       - run: npm ci
       - run: NODE_ENV=production npm run build
       - name: GitHub Pages
