@@ -168,13 +168,13 @@ export default class MonsterTable extends React.Component<
         } = monster.base;
         const expCorrection = level && getExpCollection(baseLevel, level);
         const correctedBaseExp =
-          (expCorrection !== null &&
-            baseExp &&
-            baseExp * (1 - expCorrection)) ||
-          null;
+          expCorrection !== null && baseExp
+            ? baseExp * (1 - expCorrection)
+            : null;
         const correctedJobExp =
-          (expCorrection !== null && jobExp && jobExp * (1 - expCorrection)) ||
-          null;
+          expCorrection !== null && jobExp
+            ? jobExp * (1 - expCorrection)
+            : null;
 
         return {
           ...monster,
