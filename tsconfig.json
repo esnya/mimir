@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    // Output
+    "outDir": "lib",
+    "sourceMap": true,
+    // Features
+    "target": "esnext",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    // Resolve
+    "resolveJsonModule": true,
+    // Strict
+    "strict": true,
+  },
+  "exclude": [
+    "dist",
+    "lib"
+  ],
+  "include": [
+    "src"
+  ]
+}
