@@ -1,3 +1,3 @@
-import Monster from "../types/Monster";
+import Monster from '../types/Monster';
 
 export const monsters: Monster[];
