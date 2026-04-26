@@ -70,7 +70,7 @@
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0",
+    "webpack-dev-server": "^5.2.3",
     "webpack-loader-append-prepend": "^1.0.2",
     "workbox-webpack-plugin": "^4.3.1"
   }
